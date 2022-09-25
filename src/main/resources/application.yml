@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: http://localhost:8081/
+          predicates:
+            - Path=/auth/**
+          metadata:
+            auth_type: LIGHT
+server:
+  port: 80
+authorization:
+  microservice:
+    url: http://localhost:8081/auth/check

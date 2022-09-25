@@ -1,0 +1,3 @@
+### Проверка
+GET http://localhost/auth/test
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2dpbjE4IiwidHR5cGUiOiJhY2Nlc3MiLCJleHAiOjE2NjQxMjc5ODYsImp0aSI6Ijg0N2I5M2EyY2FhZjQxYjA4OWM1YTU3NmYwNjY0NmQ2In0.1ZyI2dV8O4XT8jLWup9AVKWdV2aoH0UWxy8SY7ROeAo
