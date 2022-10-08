@@ -1,0 +1,13 @@
+version: '1.0'
+
+services:
+  auth:
+    build: ./
+    container_name: 'mission-gateway'
+    ports:
+      - 80:80
+    networks:
+      - mission
+networks:
+  mission:
+    driver: bridge
