@@ -5,13 +5,13 @@ spring:
     gateway:
       routes:
         - id: auth
-          uri: http://localhost:8081/
+          uri: http://auth:8081/
           predicates:
             - Path=/auth/**
           metadata:
-            auth_type: LIGHT
+            auth_type: NOTHING
 server:
   port: 80
 authorization:
   microservice:
-    url: http://localhost:8081/auth/check
+    url: http://auth:8081/auth/check
