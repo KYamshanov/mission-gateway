@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: http://auth:8081/
+          predicates:
+            - Path=/auth/**
+          metadata:
+            auth_type: NOTHING
+        - id: profile_public
+          uri: http://profile:8082/
+          predicates:
+            - Path=/profile/**
+          metadata:
+            auth_type: LIGHT
+            allowing_roles:
+              - ADMIN
+              - USER

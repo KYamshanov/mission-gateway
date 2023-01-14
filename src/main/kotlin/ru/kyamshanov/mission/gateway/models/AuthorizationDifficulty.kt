@@ -1,16 +1,4 @@
-package ru.kyamshanov.mission.gateway.authorization
-
-import org.springframework.beans.factory.annotation.Qualifier
-
-/**
- * Квалификатор для метода авторизации
- */
-@Qualifier
-internal annotation class AuthorizationQualifier(
-
-    val difficulty: AuthorizationDifficulty
-)
-
+package ru.kyamshanov.mission.gateway.models
 /**
  * Список методов авторизации, по сложности
  */
