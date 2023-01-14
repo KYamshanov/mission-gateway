@@ -11,9 +11,15 @@ spring:
         - id: profile_public
           uri: http://profile:8082/
           predicates:
-            - Path=/profile/**
+            - Path=/profile/get
+            - Path=/profile/set
+          metadata:
+            auth_type: LIGHT
+        - id: profile_private
+          uri: http://profile:8082/
+          predicates:
+            - Path=/profile/private/**
           metadata:
             auth_type: LIGHT
             allowing_roles:
               - ADMIN
-              - USER
