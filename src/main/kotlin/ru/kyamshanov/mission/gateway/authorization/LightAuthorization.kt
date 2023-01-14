@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import ru.kyamshanov.mission.gateway.AUTHORIZATION_URI_KEY
 import ru.kyamshanov.mission.gateway.dto.CheckAccessRqDto
+import ru.kyamshanov.mission.gateway.models.AuthorizationDifficulty
 
 /**
  * Авторизация использующая только валидацию access токена
@@ -24,5 +25,5 @@ internal class LightAuthorization(
     override fun authorizeRequest(accessToken: String) =
         webClient.post().uri(authorizationUrl)
             .bodyValue(CheckAccessRqDto(accessToken, false))
-            .exchangeToMono { Mono.just(it.statusCode()) }
+            .exchangeToMono { Mono.just(it) }
 }

@@ -1,7 +1,9 @@
 package ru.kyamshanov.mission.gateway.authorization
 
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.ClientResponse
 import reactor.core.publisher.Mono
+import ru.kyamshanov.mission.gateway.models.AuthorizationStatus
 
 /**
  * Интерфейс авторизации
@@ -15,5 +17,5 @@ interface Authorization {
      *
      * [HttpStatus.OK] - успешная авторизация, любые другие статусы означают авторизация не пройденной
      */
-    fun authorizeRequest(accessToken: String): Mono<HttpStatus>
+    fun authorizeRequest(accessToken: String): Mono<ClientResponse>
 }

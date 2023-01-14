@@ -13,9 +13,11 @@ data class CheckAccessRqDto(
 /**
  * Dto-model Тело ответа на проверку активности токена
  * @property status Статус доступности токена
+ * @property accessData Access данные
  */
 data class CheckAccessRsDto(
-    val status: AccessStatus
+    val status: AccessStatus,
+    val accessData: AccessDataDto?
 ) {
 
     /**
