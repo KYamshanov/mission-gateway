@@ -2,9 +2,9 @@ spring:
   application:
     name: gateway
   config:
-    import: file:assets/routes.yml
+    import: ${ROUTES_CONFIG}
 authorization:
   microservice:
-    url: http://auth:8081/auth/check
+    url: ${AUTHORIZATION_URL}
 server:
   port: 80

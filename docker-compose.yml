@@ -10,6 +10,9 @@ services:
       - mission
     volumes:
       - ./assets:/app/assets
+    environment:
+      AUTHORIZATION_URL: http://auth:8081/auth/check
+      ROUTES_CONFIG: file:assets/routes.yml
 networks:
   mission:
     driver: bridge
