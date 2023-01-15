@@ -16,9 +16,9 @@ data class CheckAccessRqDto(
  * @property accessData Access данные
  */
 data class CheckAccessRsDto(
-    val status: AccessStatus,
-    val accessData: AccessDataDto?
-) {
+    val status: AccessStatus = AccessStatus.BLOCKED,
+    val accessData: AccessDataDto? = null
+)  {
 
     /**
      * Статус активности токена
@@ -40,3 +40,4 @@ data class CheckAccessRsDto(
         BLOCKED
     }
 }
+
