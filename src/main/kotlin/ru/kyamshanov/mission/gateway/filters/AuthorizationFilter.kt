@@ -64,7 +64,7 @@ class AuthorizationFilter(
                     } else Mono.error(CredentialsException("User has not need roles. Required any $allowingRoles but user has ${status.data.userRoles}"))
                 }
             }
-        }
+        }.doOnError { logger.error("Auth exception",it) }
     }
 
     private fun AuthorizationDifficulty.defineAuthorizationStrategy(): AuthorizationStrategy = when (this) {
