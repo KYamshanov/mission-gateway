@@ -22,3 +22,19 @@ spring:
             auth_type: LIGHT
             allowing_roles:
               - ADMIN
+        - id: project_admin
+          uri: http://project:80/
+          predicates:
+            - Path=/project/private/admin/*
+          metadata:
+            auth_type: LIGHT
+            allowing_roles:
+              - ADMIN
+        - id: project_private
+          uri: http://project:80/
+          predicates:
+            - Path=/project/private/admin/*
+          metadata:
+            auth_type: LIGHT
+            allowing_roles:
+              - ADMIN
