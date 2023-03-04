@@ -21,7 +21,7 @@ internal class AccessStrategy(
                 require(status.status == CheckAccessRsDto.AccessStatus.ACTIVE) { "For ${authorization::class.simpleName} access token status should be ACTIVE. Now it is ${status.status}" }
                 requireNotNull(status.accessData) { "For ${authorization::class.simpleName} accessData should not be NULL" }
                 val resultStatus = AuthorizationResult.Status.SUCCESS
-                val data = AuthorizationResult.Data(status.accessData.roles, status.accessData.userId)
-                AuthorizationResult(resultStatus, data)
+                val info = AuthorizationResult.Info(status.accessData.roles, status.accessData.externalId)
+                AuthorizationResult(resultStatus, info)
             }
 }
