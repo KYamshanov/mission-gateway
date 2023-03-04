@@ -2,14 +2,15 @@ package ru.kyamshanov.mission.gateway.models
 
 data class AuthorizationResult(
     val status: Status,
-    val data: Data?
+    val info: Info?
 ) {
 
-    data class Data(
+    data class Info(
         val userRoles: List<String>,
-        val userId: String
+        val externalUserId: String
     )
 
+    //TODO DENIED не используется. Отказ от статуса
     enum class Status {
         SUCCESS,
         DENIED

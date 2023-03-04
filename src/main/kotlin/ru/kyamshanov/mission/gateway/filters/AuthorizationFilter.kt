@@ -54,17 +54,16 @@ class AuthorizationFilter(
             if (status.status != AuthorizationResult.Status.SUCCESS) Mono.error(AuthorizationException("Authorization status is not SUCCESS"))
             else {
                 if (allowingRoles == null) {
-                    (status.data?.let { exchange.appendHeaders(status.data.userId) } ?: exchange)
-                        .let { chain.filter(it) }
+                    chain.filter(exchange)
                 } else {
-                    requireNotNull(status.data) { "For authorize user status.data required" }
+                    requireNotNull(status.info) { "For authorize user status.data required" }
 
-                    if (allowingRoles.any { status.data.userRoles.contains(it) }) {
-                        chain.filter(exchange.appendHeaders(status.data.userId))
-                    } else Mono.error(CredentialsException("User has not need roles. Required any $allowingRoles but user has ${status.data.userRoles}"))
+                    if (allowingRoles.any { status.info.userRoles.contains(it) }) {
+                        chain.filter(exchange)
+                    } else Mono.error(CredentialsException("User has not need roles. Required any $allowingRoles but user has ${status.info.userRoles}"))
                 }
             }
-        }.doOnError { logger.error("Auth exception",it) }
+        }.doOnError { logger.error("Auth exception", it) }
     }
 
     private fun AuthorizationDifficulty.defineAuthorizationStrategy(): AuthorizationStrategy = when (this) {
@@ -76,11 +75,4 @@ class AuthorizationFilter(
     private fun ServerWebExchange.extractAccessToken(): String? =
         request.headers["Authorization"]?.get(0)
 
-    private fun ServerWebExchange.appendHeaders(userId: String) = request.mutate()
-        .header(USER_ID_HEADER_KEY, userId)
-        .build().let { mutate().request(it).build() }
-
-    private companion object {
-        const val USER_ID_HEADER_KEY = "user-id"
-    }
 }

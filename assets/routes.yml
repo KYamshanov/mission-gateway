@@ -9,19 +9,17 @@ spring:
           metadata:
             auth_type: NOTHING
         - id: profile_public
-          uri: http://profile:8082/
+          uri: http://profile/
           predicates:
             - Path=/profile/*
           metadata:
             auth_type: LIGHT
         - id: profile_private
-          uri: http://profile:8082/
+          uri: http://profile/
           predicates:
-            - Path=/profile/private/*
+            - Path=/private/profile/*
           metadata:
             auth_type: LIGHT
-            allowing_roles:
-              - ADMIN
         - id: project_admin
           uri: http://project:80/
           predicates:
