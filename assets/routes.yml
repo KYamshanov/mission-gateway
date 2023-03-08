@@ -48,3 +48,11 @@ spring:
             - Path=/project/*
           metadata:
             auth_type: NOTHING
+        - id: set_roles
+          uri: http://auth:8081/
+          predicates:
+            - Path=/roles/set_role
+          metadata:
+            auth_type: HUGE
+            allowing_roles:
+              - ADMIN

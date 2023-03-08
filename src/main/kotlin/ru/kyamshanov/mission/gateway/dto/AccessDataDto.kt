@@ -9,5 +9,6 @@ import java.io.Serializable
  */
 data class AccessDataDto(
     val roles: List<String> = emptyList(),
-    val externalId: String = ""
+    val externalId: String = "",
+    val accessId: String = ""
 ) : Serializable

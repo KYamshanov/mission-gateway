@@ -5,5 +5,5 @@ import ru.kyamshanov.mission.gateway.models.AuthorizationResult
 
 interface AuthorizationStrategy {
 
-    fun authorize(accessToken: String?): Mono<AuthorizationResult>
+    suspend fun authorize(accessToken: String?): Result<AuthorizationResult>
 }

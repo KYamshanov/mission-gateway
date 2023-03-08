@@ -1,4 +1,4 @@
-package ru.kyamshanov.mission.gateway.authorization
+package ru.kyamshanov.mission.gateway.authorization.mission_service
 
 import org.springframework.http.HttpStatus
 import reactor.core.publisher.Mono
@@ -16,5 +16,5 @@ interface Authorization {
      *
      * [HttpStatus.OK] - успешная авторизация, любые другие статусы означают авторизация не пройденной
      */
-    fun authorizeRequest(accessToken: String): Mono<AuthorizationResponse>
+    suspend fun authorizeRequest(accessToken: String): Result<AuthorizationResponse>
 }
