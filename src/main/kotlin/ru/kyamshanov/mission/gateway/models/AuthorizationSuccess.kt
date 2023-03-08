@@ -7,7 +7,8 @@ data class AuthorizationResult(
 
     data class Info(
         val userRoles: List<String>,
-        val externalUserId: String
+        val externalUserId: String,
+        val accessId: String
     )
 
     //TODO DENIED не используется. Отказ от статуса

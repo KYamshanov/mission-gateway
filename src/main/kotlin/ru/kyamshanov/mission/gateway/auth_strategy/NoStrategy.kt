@@ -5,6 +5,7 @@ import ru.kyamshanov.mission.gateway.models.AuthorizationResult
 
 internal class NoStrategy : AuthorizationStrategy {
 
-    override fun authorize(accessToken: String?): Mono<AuthorizationResult> =
-        Mono.just(AuthorizationResult(AuthorizationResult.Status.SUCCESS, null))
+    override suspend fun authorize(accessToken: String?): Result<AuthorizationResult> = runCatching {
+        AuthorizationResult(AuthorizationResult.Status.SUCCESS, null)
+    }
 }

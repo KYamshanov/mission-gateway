@@ -1,4 +1,4 @@
-package ru.kyamshanov.mission.gateway.authorization
+package ru.kyamshanov.mission.gateway.authorization.mission_service
 
 import org.springframework.beans.factory.annotation.Qualifier
 import ru.kyamshanov.mission.gateway.models.AuthorizationDifficulty

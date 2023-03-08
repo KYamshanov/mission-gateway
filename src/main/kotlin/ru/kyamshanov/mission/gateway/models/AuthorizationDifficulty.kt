@@ -17,5 +17,10 @@ internal enum class AuthorizationDifficulty {
     /**
      * Метод авторизации не предусматривающий проверки
      */
-    NOTHING
+    NOTHING,
+
+    /**
+     * Метод предоставляющий auth id для конечного end-point
+     */
+    EXTERNAL_ID_PROVIDER,
 }

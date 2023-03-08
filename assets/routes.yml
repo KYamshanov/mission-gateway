@@ -5,9 +5,15 @@ spring:
         - id: auth
           uri: http://auth:8081/
           predicates:
-            - Path=/auth/**
+            - Path=/auth/*
           metadata:
             auth_type: NOTHING
+        - id: identify
+          uri: http://identify/
+          predicates:
+            - Path=/private/id/mission/identify
+          metadata:
+            auth_type: EXTERNAL_ID_PROVIDER
         - id: profile_public
           uri: http://profile/
           predicates:
@@ -48,3 +54,11 @@ spring:
             - Path=/project/*
           metadata:
             auth_type: NOTHING
+        - id: set_roles
+          uri: http://auth:8081/
+          predicates:
+            - Path=/roles/set_role
+          metadata:
+            auth_type: HUGE
+            allowing_roles:
+              - ADMIN

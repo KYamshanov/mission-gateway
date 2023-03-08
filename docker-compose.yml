@@ -13,6 +13,7 @@ services:
     environment:
       AUTHORIZATION_URL: http://auth:8081/auth/check
       ROUTES_CONFIG: file:assets/routes.yml
+      ID_VERIFY_URL: http://mission-id/internal/id/mission/
 networks:
   mission:
     driver: bridge
