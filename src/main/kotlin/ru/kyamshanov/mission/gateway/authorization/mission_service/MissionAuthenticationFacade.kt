@@ -2,7 +2,6 @@ package ru.kyamshanov.mission.gateway.authorization.mission_service
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.cloud.gateway.route.Route
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils
@@ -16,6 +15,7 @@ import ru.kyamshanov.mission.gateway.auth_strategy.NoStrategy
 import ru.kyamshanov.mission.gateway.authorization.AuthenticationFacade
 import ru.kyamshanov.mission.gateway.authorization.AuthenticationService
 import ru.kyamshanov.mission.gateway.authorization.AuthenticationServiceQualifier
+import ru.kyamshanov.mission.gateway.dto.ProvideHeaders
 import ru.kyamshanov.mission.gateway.exception.AuthorizationException
 import ru.kyamshanov.mission.gateway.models.AuthorizationDifficulty
 import ru.kyamshanov.mission.gateway.models.AuthorizationResult
@@ -33,20 +33,24 @@ internal class MissionAuthenticationFacade constructor(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override suspend fun authenticateRequest(exchange: ServerWebExchange): Result<UserInfo?> = coroutineScope {
-        runCatching {
-            val authorizationDifficulty =
-                ((exchange.getAttribute<Route>(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR)?.metadata
-                    ?.get(AUTHORIZATION_DIFFICULTY_KEY) as? String)
-                    ?.let { AuthorizationDifficulty.valueOf(it) } ?: AuthorizationDifficulty.HUGE)
+    override suspend fun authenticateRequest(exchange: ServerWebExchange): Result<ProvideHeaders> =
+        coroutineScope {
+            runCatching {
+                val authorizationDifficulty =
+                    ((exchange.getAttribute<Route>(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR)?.metadata
+                        ?.get(AUTHORIZATION_DIFFICULTY_KEY) as? String)
+                        ?.let { AuthorizationDifficulty.valueOf(it) } ?: AuthorizationDifficulty.HUGE)
 
-            val authorizationDeferred = async { authorization(authorizationDifficulty, exchange) }
-            val identificationDeferred = async { identification(authorizationDifficulty, exchange) }
-            val userInfo = identificationDeferred.await()
-            compareAuthInfo(authorizationDifficulty, authorizationDeferred.await(), userInfo)
-            userInfo
+                val authorizationDeferred = async { authorization(authorizationDifficulty, exchange) }
+                val identificationDeferred = async { identification(authorizationDifficulty, exchange) }
+                val userInfo = identificationDeferred.await()
+                getAuthenticationProvideHeader(
+                    authorizationDifficulty,
+                    authorizationDeferred.await(),
+                    userInfo
+                ).getOrThrow()
+            }
         }
-    }
 
 
     private suspend fun authorization(
@@ -82,25 +86,35 @@ internal class MissionAuthenticationFacade constructor(
         authorizationDifficulty: AuthorizationDifficulty,
         exchange: ServerWebExchange
     ): UserInfo? {
-        if (authorizationDifficulty == AuthorizationDifficulty.NOTHING) return null
+        if (authorizationDifficulty == AuthorizationDifficulty.NOTHING || authorizationDifficulty == AuthorizationDifficulty.EXTERNAL_ID_PROVIDER) return null
         val idToken = requireNotNull(exchange.obtainIdToken()) { "For identification user required idToken" }
         return missionIdentificationFacade.identify(idToken).getOrThrow()
     }
 
-    private fun compareAuthInfo(
+    private fun getAuthenticationProvideHeader(
         authorizationDifficulty: AuthorizationDifficulty,
         authorizationInfo: AuthorizationResult.Info?,
         userInfo: UserInfo?
-    ): Result<Unit> = runCatching {
-        if (authorizationDifficulty == AuthorizationDifficulty.NOTHING) return@runCatching
+    ): Result<ProvideHeaders> = runCatching {
+        if (authorizationDifficulty == AuthorizationDifficulty.NOTHING) {
+            return@runCatching ProvideHeaders(null, null)
+        }
+        if (authorizationDifficulty == AuthorizationDifficulty.EXTERNAL_ID_PROVIDER) {
+            return@runCatching ProvideHeaders(
+                externalUserId = authorizationInfo?.externalUserId,
+                accessId = authorizationInfo?.accessId
+            )
+        }
         if (authorizationInfo == null || userInfo == null) throw IllegalArgumentException("Auth info cannot be null")
         if (authorizationInfo.accessId != userInfo.accessId) throw AuthorizationException("Access ids are not equal")
+        return@runCatching ProvideHeaders(userId = userInfo.internalId)
     }
 
     private fun AuthorizationDifficulty.defineAuthorizationStrategy(): AuthorizationStrategy = when (this) {
         AuthorizationDifficulty.HUGE -> AccessStrategy(hugeAuthorization)
         AuthorizationDifficulty.LIGHT -> AccessStrategy(lightAuthorization)
         AuthorizationDifficulty.NOTHING -> NoStrategy()
+        AuthorizationDifficulty.EXTERNAL_ID_PROVIDER -> AccessStrategy(lightAuthorization)
     }
 
     private fun ServerWebExchange.obtainAccessToken(): String? =

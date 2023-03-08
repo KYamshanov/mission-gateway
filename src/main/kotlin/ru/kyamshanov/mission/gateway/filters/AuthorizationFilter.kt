@@ -30,10 +30,19 @@ internal class AuthorizationFilter(
      */
     override fun filter(serverWebExchange: ServerWebExchange, chain: GatewayFilterChain): Mono<Void> = runBlocking {
         var exchange = serverWebExchange
-        authenticationFactory.createFacade(AuthenticationService.MISSION).authenticateRequest(exchange).getOrThrow()
-            ?.let {
-                exchange = exchange.appendHeader(USER_ID_HEADER_KEY, it.accessId)
-            }
+        val authResult =
+            authenticationFactory.createFacade(AuthenticationService.MISSION).authenticateRequest(exchange).getOrThrow()
+
+        if (authResult.externalUserId != null) {
+            exchange = exchange.appendHeader(EXTERNAL_ID_HEADER, authResult.externalUserId)
+        }
+        if (authResult.userId != null) {
+            exchange = exchange.appendHeader(USER_ID_HEADER_KEY, authResult.userId)
+        }
+        if (authResult.accessId != null) {
+            exchange = exchange.appendHeader(ACCESS_ID_HEADER, authResult.accessId)
+        }
+
         chain.filter(exchange)
     }
 
@@ -43,5 +52,7 @@ internal class AuthorizationFilter(
 
     private companion object {
         const val USER_ID_HEADER_KEY = "user-id"
+        const val EXTERNAL_ID_HEADER = "external-id"
+        const val ACCESS_ID_HEADER = "access-id"
     }
 }
