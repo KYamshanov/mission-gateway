@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.cloud.gateway.filter.GatewayFilterChain
 import org.springframework.cloud.gateway.filter.GlobalFilter
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
@@ -31,27 +32,19 @@ internal class AuthorizationFilter(
      */
     override fun filter(serverWebExchange: ServerWebExchange, chain: GatewayFilterChain): Mono<Void> =
         runBlocking(Dispatchers.IO) {
-            var exchange = serverWebExchange
-            val authResult =
-                authenticationFactory.createFacade(AuthenticationService.MISSION).authenticateRequest(exchange)
-                    .getOrThrow()
+            val requestBuilder = serverWebExchange.request.mutate()
+            val authResult = authenticationFactory.createFacade(AuthenticationService.MISSION)
+                .authenticateRequest(serverWebExchange).getOrThrow()
 
-            if (authResult.externalUserId != null) {
-                exchange = exchange.appendHeader(EXTERNAL_ID_HEADER, authResult.externalUserId)
-            }
-            if (authResult.userId != null) {
-                exchange = exchange.appendHeader(USER_ID_HEADER_KEY, authResult.userId)
-            }
-            if (authResult.accessId != null) {
-                exchange = exchange.appendHeader(ACCESS_ID_HEADER, authResult.accessId)
-            }
+            requestBuilder.appendHeader(EXTERNAL_ID_HEADER, authResult.externalUserId)
+            requestBuilder.appendHeader(USER_ID_HEADER_KEY, authResult.userId)
+            requestBuilder.appendHeader(ACCESS_ID_HEADER, authResult.accessId)
 
-            chain.filter(exchange)
+            chain.filter(serverWebExchange.mutate().request(requestBuilder.build()).build())
         }
 
-    private fun ServerWebExchange.appendHeader(key: String, value: String) = request.mutate()
-        .header(key, value)
-        .build().let { mutate().request(it).build() }
+
+    private fun ServerHttpRequest.Builder.appendHeader(key: String, value: String?) = header(key, value)
 
     private companion object {
         const val USER_ID_HEADER_KEY = "user-id"
