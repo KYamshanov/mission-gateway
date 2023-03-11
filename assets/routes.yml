@@ -23,7 +23,7 @@ spring:
         - id: profile_private
           uri: http://profile/
           predicates:
-            - Path=/private/profile/*
+            - Path=/profile/private/*
           metadata:
             auth_type: LIGHT
         - id: project_admin

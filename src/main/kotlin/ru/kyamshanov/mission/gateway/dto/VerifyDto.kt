@@ -5,6 +5,6 @@ data class VerifyRqDto(
 )
 
 data class VerifyRsDto(
-    val internalId: String,
-    val accessId: String
+    val internalId: String = "",
+    val accessId: String = ""
 )
