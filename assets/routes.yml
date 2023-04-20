@@ -37,7 +37,7 @@ spring:
         - id: project_manager
           uri: http://project:80/
           predicates:
-            - Path=/project/manager/*
+            - Path=/project/manager/**
           metadata:
             auth_type: LIGHT
             allowing_roles:
@@ -62,10 +62,10 @@ spring:
             auth_type: HUGE
             allowing_roles:
               - ADMIN
-        - id: profile_search_manager
+        - id: profile_manager
           uri: http://profile
           predicates:
-              - Path=/profile/manager/search/*
+              - Path=/profile/manager/*
           metadata:
               auth_type: HUGE
               allowing_roles:
