@@ -11,7 +11,7 @@ services:
     volumes:
       - ./assets:/app/assets
     environment:
-      AUTHORIZATION_URL: http://auth:8081/auth/check
+      AUTHORIZATION_URL: http://auth/auth/check
       ROUTES_CONFIG: file:assets/routes.yml
       ID_VERIFY_URL: http://mission-id/internal/id/mission/verify
 networks:

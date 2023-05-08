@@ -2,12 +2,26 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: auth
-          uri: http://auth:8081/
+        - id: auth_reg
+          uri: http://auth:80/
           predicates:
-            - Path=/auth/*
+            - Path=/auth/login
           metadata:
             auth_type: NOTHING
+        - id: auth_refresh
+          uri: http://auth:80/
+          predicates:
+            - Path=/auth/refresh
+          metadata:
+            auth_type: NOTHING
+        - id: auth_reg
+          uri: http://auth:8081/
+          predicates:
+            - Path=/auth/reg
+          metadata:
+            auth_type: HUGE
+            allowing_roles:
+              - MANAGER
         - id: identify
           uri: http://identify/
           predicates:
@@ -55,7 +69,7 @@ spring:
           metadata:
             auth_type: NOTHING
         - id: set_roles
-          uri: http://auth:8081/
+          uri: http://auth:80/
           predicates:
             - Path=/roles/set_role
           metadata:
